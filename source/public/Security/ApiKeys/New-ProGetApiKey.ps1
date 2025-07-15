@@ -92,7 +92,7 @@ function New-ProGetApiKey {
             Slug   = "/api/api-keys/create"
             Method = "Post"
             Body   = @{
-                type               = $PSCmdlet.ParameterSetName.ToLower()
+                type               = $PSCmdlet.ParameterSetName.ToLower() -replace "^feedgroup$","feed"
                 displayName        = $DisplayName
                 description        = $Description
                 expiration         = if ($Expiration) {$Expiration.ToUniversalTime()} else {$null}

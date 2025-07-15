@@ -21,6 +21,7 @@ function Get-ProGetApiKey {
         https://docs.inedo.com/docs/proget/api/apikeys/list
     #>
     [CmdletBinding(HelpUri = 'https://steviecoaster.github.io/Pagootle/Commands/Get-ProGetApiKey')]
+    [OutputType("ProGetApiKey")]
     param(
         # The name of the user to return keys for.
         [Parameter(ValueFromPipeline)]
@@ -31,7 +32,7 @@ function Get-ProGetApiKey {
         $RequestParams = @{
             Slug = '/api/api-keys/list'
         }
-        $Result = Invoke-ProGet @RequestParams
+        [ProGetApiKey[]]$Result = Invoke-ProGet @RequestParams
     }
     process {
         if ($User) {
