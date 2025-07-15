@@ -29,16 +29,14 @@ function Invoke-ProGet {
         [String]
         $ContentType = 'application/json'
     )
-
     begin {
         $Configuration = Get-ProGetConfiguration
         
-        # If we call this from New-ProGetFeed we have to use a special API key because ProGet is...well, silly.
+        # If we call this from some commands we have to use a special API key.
         $caller = (Get-PSCallStack)[1].Command
+        $ApiKeyRequests = @('New-ProGetFeed', 'Get-ProGetAssetDirectoryItem')
     }
-
     end {
-
         $ssl = if ($Configuration['UseSSL']) {
             @{Protocol = 'https' ; Port = $Configuration['SslPort'] }
         }
@@ -46,20 +44,24 @@ function Invoke-ProGet {
             @{Protocol = 'http'; Port = $Configuration['NonSslPort'] }
         }
         $Uri = '{0}:{1}{2}' -f "$($ssl['Protocol'])://$($Configuration['Hostname'])", $ssl['Port'], $Slug.TrimEnd('/')
+        $ApiHeader = if ($caller -notin $ApiKeyRequests -and $Configuration.Credential) {
+            @{'X-ApiKey' = $Configuration.Credential.GetNetworkCredential().Password }
+        } elseif ($Configuration.ApiKey) {
+            @{'X-ApiKey' = $Configuration.ApiKey.GetNetworkCredential().Password }
+        }
 
         Write-Verbose -Message $Uri
         $params = @{
             Uri                  = $Uri
             Method               = $Method
             ContentType          = $ContentType
-            Headers              = if ($caller -ne 'New-ProGetFeed') {
-                @{'X-ApiKey' = $Configuration.Credential.GetNetworkCredential().Password }
-            } 
-            else {
-                @{'X-ApiKey' = $Configuration.ApiKey.GetNetworkCredential().Password }
-            }
-            SkipCertificateCheck = $true
+            Headers              = $ApiHeader
             Verbose              = $false
+        }
+
+        if ((Get-Command Invoke-RestMethod).Parameters.SkipCertificateCheck) {
+            # We should probably remove this?
+            $params.SkipCertificateCheck = $true
         }
 
         if ($Body) {
