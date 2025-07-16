@@ -27,7 +27,11 @@ function Invoke-ProGet {
 
         [Parameter()]
         [String]
-        $ContentType = 'application/json'
+        $ContentType = 'application/json',
+
+        [Parameter()]
+        [hashtable]
+        $AdditionalParameters
     )
     begin {
         $Configuration = Get-ProGetConfiguration
@@ -43,14 +47,14 @@ function Invoke-ProGet {
         else {
             @{Protocol = 'http'; Port = $Configuration['NonSslPort'] }
         }
-        $Uri = '{0}:{1}{2}' -f "$($ssl['Protocol'])://$($Configuration['Hostname'])", $ssl['Port'], $Slug.TrimEnd('/')
+        $Uri = '{0}:{1}/{2}' -f "$($ssl['Protocol'])://$($Configuration['Hostname'])", $ssl['Port'], $Slug.TrimStart('/').TrimEnd('/')
         $ApiHeader = if ($caller -notin $ApiKeyRequests -and $Configuration.Credential) {
             @{'X-ApiKey' = $Configuration.Credential.GetNetworkCredential().Password }
         } elseif ($Configuration.ApiKey) {
             @{'X-ApiKey' = $Configuration.ApiKey.GetNetworkCredential().Password }
         }
 
-        Write-Verbose -Message $Uri
+        
         $params = @{
             Uri                  = $Uri
             Method               = $Method
@@ -81,10 +85,15 @@ function Invoke-ProGet {
             $fileContent = [System.IO.File]::ReadAllBytes($File)
             $params['Body'] = $fileContent
             $params['ContentType'] = 'application/octet-stream'
-            Write-Verbose $params.Uri
         }
 
-        #Write-Verbose ($Body | ConvertTo-Json -Depth 5)
+        if ($AdditionalParameters) {
+            $AdditionalParameters.GetEnumerator().ForEach{
+                $params.$_ = $AdditionalParameters.$_
+            }
+        }
+
+        Write-Verbose "[$($Method.ToUpper())] $($Uri)"
         Invoke-RestMethod @params
     }
 }
