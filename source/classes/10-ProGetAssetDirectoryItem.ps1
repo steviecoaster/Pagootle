@@ -19,7 +19,7 @@ class ProGetAssetDirectoryItem {
         $this.AssetDirectory = $InputObject.content -replace '^(?<Endpoint>.+)/endpoints/(?<AssetDirectory>.+?)/content/(?<FileName>.+)$', '${AssetDirectory}'
         $this.Modified = [DateTime]::Parse($InputObject.Modified, ([cultureinfo]::new("en-US", $false)), "AssumeUniversal")
         $this.Created = [DateTime]::Parse($InputObject.Created, ([cultureinfo]::new("en-US", $false)), "AssumeUniversal")
-        
+
         foreach ($Property in $InputObject.PSObject.Properties.Name) {
             if ($this.PSObject.Properties.Where{$_.MemberType -eq 'Property'}.Name -contains $Property) {
                 if (-not $this.$Property) {

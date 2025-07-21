@@ -10,27 +10,24 @@ function Set-ProGetConfiguration {
     The hostname of the ProGet server. This parameter is mandatory.
 
     .PARAMETER Credential
-    A PSCredential object containing the username and password for authenticating with the ProGet server. This parameter is mandatory.
+    A PSCredential object containing the username and password for authenticating with the ProGet server. If provided, we create an API key for you, and store that.
 
-    .PARAMETER NonSslPort
-    The port to use for non-SSL connections. Defaults to 8624.
+    .PARAMETER Port
+    The port to use.
 
     .PARAMETER UseSSL
-    Specifies whether to use SSL for the connection. This parameter is part of the 'ssl' parameter set.
-
-    .PARAMETER SslPort
-    The port to use for SSL connections. Defaults to 443. This parameter is mandatory when `UseSSL` is specified.
+    Specifies whether to use SSL for the connection.
 
     .PARAMETER Name
     The name of the configuration to save. Defaults to 'Default'.
 
     .PARAMETER ApiKey
-    The API key to use for authentication. Defaults to 'SetMe'.
+    The API key to use for authentication.
 
     .EXAMPLE
-    Set-ProGetConfiguration -Hostname "proget.example.com" -Credential (Get-Credential)
+    Set-ProGetConfiguration -Hostname "proget.example.com" -Credential admin
 
-    Sets the configuration for ProGet with the specified hostname and credentials.
+    Sets the configuration for ProGet with the specified hostname and a created API key.
 
     .EXAMPLE
     Set-ProGetConfiguration -Hostname "proget.example.com" -ApiKey asdf8675309
@@ -38,17 +35,12 @@ function Set-ProGetConfiguration {
     Sets the configuration for ProGet with the specified hostname and apikey
 
     .EXAMPLE
-    Set-ProGetConfiguration -Hostname "proget.example.com" -ApiKey asdf8675309 -Credential (Get-Credential)
-
-    Sets the configuration for ProGet with the specified hostname, credential, and apikey
-
-    .EXAMPLE
-    Set-ProGetConfiguration -Hostname "proget.example.com" -Credential (Get-Credential) -UseSSL -SslPort 8443
+    Set-ProGetConfiguration -Hostname "proget.example.com" -Credential admin -UseSSL -Port 8443
 
     Sets the configuration for ProGet with SSL enabled and a custom SSL port.
 
     .EXAMPLE
-    Set-ProGetConfiguration -Hostname "proget.example.com" -Credential (Get-Credential) -Name "CustomConfig"
+    Set-ProGetConfiguration -Hostname "proget.example.com" -Credential admin -Name "CustomConfig"
 
     Sets the configuration for ProGet with a custom configuration name.
     #>
@@ -59,26 +51,20 @@ function Set-ProGetConfiguration {
         $Hostname,
 
         [Parameter(Mandatory, ParameterSetName = 'Credential')]
-        [Parameter(Mandatory, ParameterSetName = 'Both')]
         [System.Management.Automation.PSCredential]
         $Credential,
 
         [Parameter(Mandatory, ParameterSetName = 'Apikey')]
-        [Parameter(Mandatory, ParameterSetName = 'Both')]
         [String]
         $ApiKey,
 
         [Parameter()]
-        [Int]
-        $NonSslPort = '8624',
+        [UInt16]
+        $Port = $(if ($UseSSL) {443} else {8624}),
 
         [Parameter()]
         [Switch]
         $UseSSL,
-
-        [Parameter()]
-        [Int]
-        $SslPort = 443,
 
         [Parameter()]
         [String]
@@ -88,25 +74,20 @@ function Set-ProGetConfiguration {
         $Configuration = @{
             ModuleVersion = (Get-Module Pagootle).Version
             Hostname      = $Hostname
-            NonSslPort    = $NonSslPort
+            Port          = [string]$Port
         }
 
-        if ($UseSSL) {
-            $Configuration.Add('UseSSL', $UseSSL)
-            $Configuration.Add('SSLPort', $SslPort)
-        }
+        $Configuration.Add('EndpointUrl', "http$(if ($UseSSL) {'s'})://$($HostName):$($Port)/")
 
         switch ($PSBoundParameters.Keys) {
             'Credential' {
-                $Configuration.Add('Credential', $Credential)
+                $Configuration.ApiKey = CreateApiKeyFromCredential -Credential $Credential -Name $Name
             }
             'ApiKey' {
-                $Configuration.Add('ApiKey', $([PSCredential]::new('null', ($ApiKey | ConvertTo-SecureString -AsPlainText -Force))))
+                $Configuration.Add('ApiKey', (ConvertTo-SecureString $ApiKey -AsPlainText -Force))
             }
         }
 
-        $Configuration.Add('EndpointUrl', "http$(if ($UseSSL) {'s'})://$($HostName):$(@($NonSslPort, $SslPort)[$UseSSL])/")
-        
-        $Configuration | Export-Configuration -CompanyName $env:USERNAME -Name $Name -Scope User
+        $Configuration | Export-Configuration -CompanyName "Pagootle" -Name $Name
     }
 }

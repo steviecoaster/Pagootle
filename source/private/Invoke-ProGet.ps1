@@ -35,36 +35,19 @@ function Invoke-ProGet {
     )
     begin {
         $Configuration = Get-ProGetConfiguration
-        
-        # If we call this from some commands we have to use a special API key.
-        $caller = (Get-PSCallStack)[1].Command
-        $ApiKeyRequests = @('New-ProGetFeed', 'Get-ProGetAssetDirectoryItem')
     }
     end {
-        $ssl = if ($Configuration['UseSSL']) {
-            @{Protocol = 'https' ; Port = $Configuration['SslPort'] }
-        }
-        else {
-            @{Protocol = 'http'; Port = $Configuration['NonSslPort'] }
-        }
-        $Uri = '{0}:{1}/{2}' -f "$($ssl['Protocol'])://$($Configuration['Hostname'])", $ssl['Port'], $Slug.TrimStart('/').TrimEnd('/')
-        $ApiHeader = if ($caller -notin $ApiKeyRequests -and $Configuration.Credential) {
-            @{'X-ApiKey' = $Configuration.Credential.GetNetworkCredential().Password }
-        } elseif ($Configuration.ApiKey) {
-            @{'X-ApiKey' = $Configuration.ApiKey.GetNetworkCredential().Password }
-        }
-
-        
         $params = @{
-            Uri                  = $Uri
+            Uri                  = "$($Configuration.EndpointUrl.TrimEnd('/'))/$($Slug.TrimStart('/'))"
             Method               = $Method
             ContentType          = $ContentType
-            Headers              = $ApiHeader
+            Headers              = @{
+                'X-ApiKey' = ConvertFrom-SecureString $Configuration.ApiKey -AsPlainText
+            }
             Verbose              = $false
         }
 
-        if ((Get-Command Invoke-RestMethod).Parameters.SkipCertificateCheck) {
-            # We should probably remove this?
+        if ($env:PagootleIgnoreInvalidCertificate -and (Get-Command Invoke-RestMethod).Parameters.SkipCertificateCheck) {
             $params.SkipCertificateCheck = $true
         }
 
@@ -93,7 +76,7 @@ function Invoke-ProGet {
             }
         }
 
-        Write-Verbose "[$($Method.ToUpper())] $($Uri)"
+        Write-Verbose "[$($Method.ToUpper())] $($params.Uri)"
         Invoke-RestMethod @params
     }
 }

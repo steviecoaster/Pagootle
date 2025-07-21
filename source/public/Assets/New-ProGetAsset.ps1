@@ -94,11 +94,6 @@ function New-ProGetAsset {
     )
     begin {
         $Configuration = Get-ProGetConfiguration
-        $ApiCredential = if ($Configuration.ApiKey) {
-            $Configuration.ApiKey.GetNetworkCredential().Password
-        } elseif ($Configuration.Credential) {
-            $Configuration.Credential.GetNetworkCredential().Password
-        }
     }
     process {
         $fileInfo = Get-Item -Path $Path
@@ -149,7 +144,7 @@ function New-ProGetAsset {
                     $req = [System.Net.WebRequest]::CreateHttp("$($Configuration.EndpointUrl)$($RequestParams.Slug)?multipart=upload&id=$uuid&index=$index&offset=$offset&totalSize=$fileLength&partSize=$currentChunkSize&totalParts=$totalParts")
                     $req.Method = 'POST'
                     Write-Verbose "[$($req.Method)] $($req.RequestUri)"
-                    $req.Headers.Add("X-ApiKey", $ApiCredential)
+                    $req.Headers.Add("X-ApiKey", (ConvertFrom-SecureString $Configuration.ApiKey -AsPlainText))
                     $req.ContentLength = $currentChunkSize
                     $req.AllowWriteStreamBuffering = $false
                     $reqStream = $req.GetRequestStream()
@@ -167,7 +162,7 @@ function New-ProGetAsset {
                 $req = [System.Net.WebRequest]::CreateHttp("$($Configuration.EndpointUrl)$($RequestParams.Slug)?multipart=complete&id=$uuid")
                 $req.Method = 'POST'
                 Write-Verbose "[$($req.Method)] $($req.RequestUri)"
-                $req.Headers.Add("X-ApiKey", $ApiCredential)
+                $req.Headers.Add("X-ApiKey", (ConvertFrom-SecureString $Configuration.ApiKey -AsPlainText))
                 $req.ContentLength = 0
                 try {
                     $response = $req.GetResponse()

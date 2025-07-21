@@ -24,8 +24,27 @@ function InvokeConfigMigration {
 
             $OldConfig = Import-Configuration @ConfigToLoad
 
+            # We only use 'Port'
+            $OldConfig.Port = @($OldConfig.NonSslPort, $OldConfig.SslPort)[$OldConfig.ContainsKey("UseSSL")]
+            $null = $OldConfig.Remove("NonSslPort")
+            $null = $OldConfig.Remove("SslPort")
+
             # We added an EndpointUrl value
-            $OldConfig.EndpointUrl= "http$(if ($OldConfig.UseSSL) {'s'})://$($OldConfig.HostName):$(@($OldConfig.NonSslPort, $OldConfig.SslPort)[$OldConfig.ContainsKey("UseSSL")])/"
+            $OldConfig.EndpointUrl= "http$(if ($OldConfig.UseSSL) {'s'})://$($OldConfig.HostName):$($OldConfig.Port)/"
+
+            # We use a SecureString for storing the API Key
+            if ($OldConfig.ApiKey.Username) {
+                $OldConfig.ApiKey = $OldConfig.ApiKey.Password
+            }
+
+            # We no longer support Credential
+            if ($OldConfig.Credential -and -not $OldConfig.ApiKey) {
+                $OldConfig.ApiKey = CreateApiKeyFromCredential -Credential $Credential -Name $Name
+            }
+
+            if ($OldConfig.Credential) {
+                $null = $OldConfig.Remove("Credential")
+            }
         }
     }
 
