@@ -31,21 +31,19 @@ function Get-ProGetFeed {
     .NOTES
 
     #>
-    [CmdletBinding(HelpUri = 'https://steviecoaster.github.io/Pagootle/Commands/Get-ProGetFeed')]
-    Param(
-        [Parameter()]
+    [CmdletBinding(DefaultParameterSetName = "Feed", HelpUri = 'https://steviecoaster.github.io/Pagootle/Commands/Get-ProGetFeed')]
+    param(
+        [Parameter(ParameterSetName = "Feed")]
+        [Alias("Name")]
         [String]
         $Feed,
 
-        [Parameter()]
+        [Parameter(ParameterSetName = "Type")]
         [ValidateSet('asset', 'bower', 'conda', 'chocolatey', 'debianlegacy', 'debian', 'docker', 'helm', 'maven', 'npm', 'nuget', 'powershell', 'universal', 'pypi', 'romp', 'rpm', 'rubygems', 'vsix')]
         [String]
         $Type
     )
     end {
-        if($Feed -and $Type){
-            throw 'Only one parameter of Feed or Type can be used at a time'
-        }
         $params = @{
             Method = 'GET'
         }

@@ -31,7 +31,7 @@ function CopyMaxBytes {
             $totalBytesRead += $bytesRead
             if ($totalBytesRead -ge $maxBytes) { break }
             $overallProgress = $startOffset + $totalBytesRead
-            Write-Progress -Activity "Uploading $fileName..." -Status "$overallProgress/$totalSize" -PercentComplete ($overallProgress / $totalSize * 100)
+            Write-Progress -Activity "Uploading $Path..." -Status "$overallProgress/$totalSize" -PercentComplete ($overallProgress / $totalSize * 100)
         }
     }
 }

@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Configuration>
+    <SelectionSets>
+        <SelectionSet>
+            <Name>PagootleTypes</Name>
+            <Types>
+                <TypeName>ProGetAssetDirectoryItem</TypeName>
+                <TypeName>ProGetApiKey</TypeName>
+                <TypeName>ProGetAssetItemMetadata</TypeName>
+            </Types>
+        </SelectionSet>
+    </SelectionSets>
+    <!-- ################ CONTROL DEFINITIONS ################ -->
+    <Controls>
+        <Control>
+            <Name>ProGetAssetDirectoryItem-GroupingFormat</Name>
+            <CustomControl>
+                <CustomEntries>
+                    <CustomEntry>
+                        <CustomItem>
+                            <Frame>
+                                <LeftIndent>4</LeftIndent>
+                                <CustomItem>
+                                    <Text>Folder: </Text>
+                                    <ExpressionBinding>
+                                        <ScriptBlock>
+                                            "/" + $_.Parent
+                                        </ScriptBlock>
+                                    </ExpressionBinding>
+                                </CustomItem>
+                            </Frame>
+                        </CustomItem>
+                    </CustomEntry>
+                </CustomEntries>
+            </CustomControl>
+        </Control>
+    </Controls>
+    <ViewDefinitions>
+        <View>
+            <Name>ProGetAssetDirectoryItem</Name>
+            <ViewSelectedBy>
+                <TypeName>ProGetAssetDirectoryItem</TypeName>
+            </ViewSelectedBy>
+            <GroupBy>
+                <PropertyName>Parent</PropertyName>
+                <CustomControlName>ProGetAssetDirectoryItem-GroupingFormat</CustomControlName>
+            </GroupBy>
+            <TableControl>
+                <TableHeaders>
+                    <TableColumnHeader>
+                        <Label>Name</Label>
+                        <Alignment>Left</Alignment>
+                        <Width>58</Width>
+                    </TableColumnHeader>
+                    <TableColumnHeader>
+                        <Label>Modified</Label>
+                        <Width>20</Width>
+                    </TableColumnHeader>
+                    <TableColumnHeader>
+                        <Label>Size</Label>
+                        <Width>12</Width>
+                    </TableColumnHeader>
+                </TableHeaders>
+                <TableRowEntries>
+                    <TableRowEntry>
+                        <TableColumnItems>
+                            <TableColumnItem>
+                                <ScriptBlock>
+                                    if ($PSStyle) {  # Pwsh
+                                        if ($_.Type -eq 'dir') {
+                                            "$($PSStyle.FileInfo.Directory)$($_.Name)$($PSStyle.Reset)"
+                                        } elseif ($PSStyle.FormatHyperlink -and $_.Content) {
+                                            "$($PSStyle.FormatHyperlink($_.Name, $_.Content))$($PSStyle.Reset)"
+                                        }
+                                    } elseif ($Host.PrivateData) {  # PowerShell, not a good test
+                                        if ($_.Type -eq 'dir') {
+                                            "$([char]27)[7;$(37);$(44)m$($_.Name)$([char]27)[0m"
+                                        #} elseif ($_.Content) {
+                                        #    "$([char]27)]8;;$($_.Content)`a$($_.Name)$([char]27)]8;;`a"  # TODO: Fix this
+                                        } else {
+                                            $_.Name
+                                        }
+                                    } else {  # Fallback
+                                        $_.Name
+                                    }
+                                </ScriptBlock>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <PropertyName>Modified</PropertyName>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <Alignment>Right</Alignment>
+                                <ScriptBlock>
+                                    switch ($_.Size) {
+                                        {$_ -lt 1KB} {return "$($_)  B"}
+                                        {$_ -lt 1MB} {return "$([Math]::Round($_ / 1KB, 2)) KB"}
+                                        {$_ -lt 1GB} {return "$([Math]::Round($_ / 1MB, 2)) MB"}
+                                        {$_ -ge 1GB} {return "$([Math]::Round($_ / 1GB, 2)) GB"}
+                                    }
+                                </ScriptBlock>
+                            </TableColumnItem>
+                        </TableColumnItems>
+                    </TableRowEntry>
+                </TableRowEntries>
+            </TableControl>
+        </View>
+        <View>
+            <Name>ProGetAssetItemMetadata</Name>
+            <ViewSelectedBy>
+                <TypeName>ProGetAssetItemMetadata</TypeName>
+            </ViewSelectedBy>
+            <GroupBy>
+                <PropertyName>Parent</PropertyName>
+                <CustomControlName>ProGetAssetDirectoryItem-GroupingFormat</CustomControlName>
+            </GroupBy>
+            <TableControl>
+                <TableHeaders>
+                    <TableColumnHeader>
+                        <Label>Name</Label>
+                        <Alignment>Left</Alignment>
+                    </TableColumnHeader>
+                    <TableColumnHeader>
+                        <Label>Type</Label>
+                    </TableColumnHeader>
+                    <TableColumnHeader>
+                        <Label>UserMetadata</Label>
+                    </TableColumnHeader>
+                    <TableColumnHeader>
+                        <Label>CacheHeader</Label>
+                    </TableColumnHeader>
+                </TableHeaders>
+                <TableRowEntries>
+                    <TableRowEntry>
+                        <TableColumnItems>
+                            <TableColumnItem>
+                                <PropertyName>Name</PropertyName>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <ScriptBlock>
+                                    $_.Type.Split(';')[0]
+                                </ScriptBlock>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <PropertyName>UserMetadata</PropertyName>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <PropertyName>CacheHeader</PropertyName>
+                            </TableColumnItem>
+                        </TableColumnItems>
+                        <Wrap/>
+                    </TableRowEntry>
+                </TableRowEntries>
+            </TableControl>
+        </View>
+        <View>
+            <Name>ProGetApiKey</Name>
+            <ViewSelectedBy>
+                <TypeName>ProGetApiKey</TypeName>
+            </ViewSelectedBy>
+            <TableControl>
+                <TableHeaders>
+                    <TableColumnHeader>
+                        <Label>Id</Label>
+                        <Alignment>Left</Alignment>
+                        <Width>4</Width>
+                    </TableColumnHeader>
+                    <TableColumnHeader>
+                        <Label>Name/Description</Label>
+                    </TableColumnHeader>
+                    <TableColumnHeader>
+                        <Label>Type</Label>
+                        <Width>8</Width>
+                    </TableColumnHeader>
+                    <TableColumnHeader>
+                        <Label>Permissions</Label>
+                        <Width>40</Width>
+                    </TableColumnHeader>
+                    <TableColumnHeader>
+                        <Label>Expiration</Label>
+                        <Width>12</Width>
+                    </TableColumnHeader>
+                </TableHeaders>
+                <TableRowEntries>
+                    <TableRowEntry>
+                        <TableColumnItems>
+                            <TableColumnItem>
+                                <PropertyName>Id</PropertyName>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <ScriptBlock>
+                                    "$(if ($_.DisplayName) {$_.DisplayName} else {"(id=$($_.Id))"})`n$(if($_.Description){"$($PSStyle.Dim)$($_.Description)$($PSStyle.Reset)"})"
+                                </ScriptBlock>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <PropertyName>Type</PropertyName>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <ScriptBlock>
+                                    $Current = $_
+                                    switch ($Current.Type) {
+                                        "system" {
+                                            $Current.SystemApis
+                                        }
+                                        "user" {
+                                            $Current.User
+                                        }
+                                        "feed" {
+                                            if ($Current.Feed) {
+                                                @(
+                                                    "$($Current.PackagePermissions -join ', ')"
+                                                    "`n(in feed"
+                                                    $Current.Feed + ')'
+                                                ) -join ' '
+                                            } elseif ($Current.FeedGroup) {
+                                                @(
+                                                    "$($Current.PackagePermissions -join ', ')"
+                                                    "`n(in feed group"
+                                                    $Current.FeedGroup + ')'
+                                                ) -join ' '
+                                            } else {
+                                                @(
+                                                    "$($Current.PackagePermissions -join ', ')"
+                                                    "`n(in all feeds)"
+                                                ) -join ' '
+                                            }
+                                        }
+                                    }
+                                </ScriptBlock>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <ScriptBlock>
+                                    if ($_.Expiration -gt 0) {
+                                        '{0:yyyy}-{0:MMM}-{0:dd}' -f $_.Expiration
+                                    } else {
+                                        "Not Set"
+                                    }
+                                </ScriptBlock>
+                            </TableColumnItem>
+                        </TableColumnItems>
+                        <Wrap/>
+                    </TableRowEntry>
+                </TableRowEntries>
+            </TableControl>
+        </View>
+    </ViewDefinitions>
+</Configuration>

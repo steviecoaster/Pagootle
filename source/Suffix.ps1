@@ -1,0 +1,1 @@
+$script:CurrentConfiguration = "Default"

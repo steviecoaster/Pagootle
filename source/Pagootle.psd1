@@ -63,7 +63,7 @@ RequiredModules = @(@{ModuleName='Configuration' ; ModuleVersion = '1.6.0'})
 # TypesToProcess = @()
 
 # Format files (.ps1xml) to be loaded when importing this module
-# FormatsToProcess = @()
+FormatsToProcess = @("data\Pagootle.Format.ps1xml")
 
 # Modules to import as nested modules of the module specified in RootModule/ModuleToProcess
 # NestedModules = @()

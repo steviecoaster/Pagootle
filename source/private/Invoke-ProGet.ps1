@@ -27,39 +27,28 @@ function Invoke-ProGet {
 
         [Parameter()]
         [String]
-        $ContentType = 'application/json'
-    )
+        $ContentType = 'application/json',
 
+        [Parameter()]
+        [hashtable]
+        $AdditionalParameters
+    )
     begin {
         $Configuration = Get-ProGetConfiguration
-        
-        # If we call this from New-ProGetFeed we have to use a special API key because ProGet is...well, silly.
-        $caller = (Get-PSCallStack)[1].Command
     }
-
     end {
-
-        $ssl = if ($Configuration['UseSSL']) {
-            @{Protocol = 'https' ; Port = $Configuration['SslPort'] }
-        }
-        else {
-            @{Protocol = 'http'; Port = $Configuration['NonSslPort'] }
-        }
-        $Uri = '{0}:{1}{2}' -f "$($ssl['Protocol'])://$($Configuration['Hostname'])", $ssl['Port'], $Slug.TrimEnd('/')
-
-        Write-Verbose -Message $Uri
         $params = @{
-            Uri                  = $Uri
+            Uri                  = "$($Configuration.EndpointUrl.TrimEnd('/'))/$($Slug.TrimStart('/'))"
             Method               = $Method
             ContentType          = $ContentType
-            Headers              = if ($caller -ne 'New-ProGetFeed') {
-                @{'X-ApiKey' = $Configuration.Credential.GetNetworkCredential().Password }
-            } 
-            else {
-                @{'X-ApiKey' = $Configuration.ApiKey.GetNetworkCredential().Password }
+            Headers              = @{
+                'X-ApiKey' = ConvertFrom-SecureString $Configuration.ApiKey -AsPlainText
             }
-            SkipCertificateCheck = $true
             Verbose              = $false
+        }
+
+        if ($env:PagootleIgnoreInvalidCertificate -and (Get-Command Invoke-RestMethod).Parameters.SkipCertificateCheck) {
+            $params.SkipCertificateCheck = $true
         }
 
         if ($Body) {
@@ -79,10 +68,15 @@ function Invoke-ProGet {
             $fileContent = [System.IO.File]::ReadAllBytes($File)
             $params['Body'] = $fileContent
             $params['ContentType'] = 'application/octet-stream'
-            Write-Verbose $params.Uri
         }
 
-        #Write-Verbose ($Body | ConvertTo-Json -Depth 5)
+        if ($AdditionalParameters) {
+            $AdditionalParameters.GetEnumerator().ForEach{
+                $params.$_ = $AdditionalParameters.$_
+            }
+        }
+
+        Write-Verbose "[$($Method.ToUpper())] $($params.Uri)"
         Invoke-RestMethod @params
     }
 }
