@@ -21,10 +21,8 @@ function Remove-ProGetAssetDirectory {
 
     # Removes piped in folders recursively.
 
-    .LINK
-    https://docs.inedo.com/docs/proget/api/assets/folders/delete
     #>
-    [CmdletBinding(SupportsShouldProcess, ConfirmImpact = "High", HelpUri = 'https://steviecoaster.github.io/Pagootle/Commands/Commands/Remove-ProGetAssetDirectory')]
+    [CmdletBinding(SupportsShouldProcess, ConfirmImpact = "High", HelpUri = 'https://steviecoaster.github.io/Pagootle/Commands/Remove-ProGetAssetDirectory')]
     param(
         [Parameter(Mandatory, ValueFromPipelineByPropertyName, Position = 0)]
         [ValidateScript({

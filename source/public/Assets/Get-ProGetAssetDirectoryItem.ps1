@@ -16,10 +16,8 @@ function Get-ProGetAssetDirectoryItem {
 
     # Returns all items in the ops folder of the Internal asset directory.
 
-    .LINK
-    https://docs.inedo.com/docs/proget/api/assets/folders/list
     #>
-    [CmdletBinding(HelpUri = 'https://steviecoaster.github.io/Pagootle/Commands/Commands/Get-ProGetAssetDirectoryItem')]
+    [CmdletBinding(HelpUri = 'https://steviecoaster.github.io/Pagootle/Commands/Get-ProGetAssetDirectoryItem')]
     [OutputType("ProGetAssetDirectoryItem")]
     param(
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]

@@ -31,13 +31,8 @@ function New-ProGetAsset {
         .Example
         New-ProGetAsset -AssetDirectory -Path C:\Files\Image.jpg
 
-        .Link
-        https://docs.inedo.com/docs/proget/api/assets/files/upload
-
-        .Link
-        https://docs.inedo.com/docs/proget/api/assets/files/upload/multipart
     #>
-    [CmdletBinding(HelpUri = 'https://steviecoaster.github.io/Pagootle/Commands/Commands/New-ProGetAsset')]
+    [CmdletBinding(HelpUri = 'https://steviecoaster.github.io/Pagootle/Commands/New-ProGetAsset')]
     param(
         [Parameter(Mandatory, ValueFromPipeline)]
         [string]

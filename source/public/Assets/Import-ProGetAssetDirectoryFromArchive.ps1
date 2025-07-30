@@ -11,10 +11,8 @@ function Import-ProGetAssetDirectoryFromArchive {
 
     # Overwrites the current contents of the 'boinstall' folder with the contents of the boinstallfiles zip file.
 
-    .LINK
-    https://docs.inedo.com/docs/proget/api/assets/folders/import
     #>
-    [CmdletBinding(SupportsShouldProcess, HelpUri = 'https://steviecoaster.github.io/Pagootle/Commands/Commands/Import-ProGetAssetDirectoryFromArchive')]
+    [CmdletBinding(SupportsShouldProcess, HelpUri = 'https://steviecoaster.github.io/Pagootle/Commands/Import-ProGetAssetDirectoryFromArchive')]
     param(
         # The asset directory to upload to.
         [Parameter(Mandatory)]

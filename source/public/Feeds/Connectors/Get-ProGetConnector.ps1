@@ -19,7 +19,7 @@ function Get-ProGetConnector {
 
     Retrieves details about the connector named "MyConnector".
 #>
-    [CmdletBinding(HelpUri = 'https://steviecoaster.github.io/Pagootle/Commands/Commands/Get-ProGetConnector')]
+    [CmdletBinding(HelpUri = 'https://steviecoaster.github.io/Pagootle/Commands/Get-ProGetConnector')]
     Param(
         [Parameter()]
         [String]

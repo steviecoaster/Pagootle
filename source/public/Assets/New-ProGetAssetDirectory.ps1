@@ -19,10 +19,8 @@ function New-ProGetAssetDirectory {
 
     # Recreate the directories you have on an existing server on a new asset directory.
 
-    .LINK
-    https://docs.inedo.com/docs/proget/api/assets/folders/create
     #>
-    [CmdletBinding(SupportsShouldProcess, HelpUri = 'https://steviecoaster.github.io/Pagootle/Commands/Commands/New-ProGetAssetDirectory')]
+    [CmdletBinding(SupportsShouldProcess, HelpUri = 'https://steviecoaster.github.io/Pagootle/Commands/New-ProGetAssetDirectory')]
     param(
         [Parameter(Mandatory, ValueFromPipelineByPropertyName, Position = 0)]
         [ValidateScript({

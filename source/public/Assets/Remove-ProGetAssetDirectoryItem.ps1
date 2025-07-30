@@ -16,10 +16,8 @@ function Remove-ProGetAssetDirectoryItem {
 
     # Removes assets that haven't been modified in a year.
 
-    .LINK
-    https://docs.inedo.com/docs/proget/api/assets/files/delete
     #>
-    [CmdletBinding(SupportsShouldProcess, ConfirmImpact = "High", HelpUri = 'https://steviecoaster.github.io/Pagootle/Commands/Commands/Remove-ProGetAssetDirectoryItem', DefaultParameterSetName = "Pipeline")]
+    [CmdletBinding(SupportsShouldProcess, ConfirmImpact = "High", HelpUri = 'https://steviecoaster.github.io/Pagootle/Commands/Remove-ProGetAssetDirectoryItem', DefaultParameterSetName = "Pipeline")]
     param(
         [Parameter(Mandatory, ValueFromPipelineByPropertyName, Position = 0, ParameterSetName = "Split")]
         [ValidateScript({

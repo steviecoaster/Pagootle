@@ -12,10 +12,8 @@ function Save-ProGetAssetDirectoryArchive {
     .EXAMPLE
     Save-ProGetAsset -AssetDirectory Internal -Parent some/folder -OutputPath c:\temp\downloads\folder.zip
 
-    .LINK
-    https://docs.inedo.com/docs/proget/api/assets/files/download
     #>
-    [CmdletBinding(HelpUri = 'https://steviecoaster.github.io/Pagootle/Commands/Commands/Save-ProGetAssetDirectory')]
+    [CmdletBinding(HelpUri = 'https://steviecoaster.github.io/Pagootle/Commands/Save-ProGetAssetDirectory')]
     [OutputType([System.IO.FileInfo])]
     param(
         # The asset directory to download the folder from.
