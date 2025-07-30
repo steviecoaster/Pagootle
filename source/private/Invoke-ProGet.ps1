@@ -42,7 +42,7 @@ function Invoke-ProGet {
             Method               = $Method
             ContentType          = $ContentType
             Headers              = @{
-                'X-ApiKey' = ConvertFrom-SecureString $Configuration.ApiKey -AsPlainText
+                'X-ApiKey' = ([System.Net.NetworkCredential]::new("ApiKey", $Configuration.ApiKey)).Password
             }
             Verbose              = $false
         }
