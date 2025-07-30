@@ -5,15 +5,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../img/favicon.ico" />
-    <title>New-ProGetGroup - Pagootle Documentation</title>
+    <title>Remove-ProGetAssetDirectory - Pagootle Documentation</title>
     <link rel="stylesheet" href="../../css/theme.css" />
     <link rel="stylesheet" href="../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "New-ProGetGroup";
-        var mkdocs_page_input_path = "Commands\\New-ProGetGroup.md";
+        var mkdocs_page_name = "Remove-ProGetAssetDirectory";
+        var mkdocs_page_input_path = "Commands\\Remove-ProGetAssetDirectory.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -81,7 +81,15 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../New-ProGetFeedDropPath/">New-ProGetFeedDropPath</a>
                   </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" href="#">New-ProGetGroup</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../New-ProGetGroup/">New-ProGetGroup</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../New-ProGetUser/">New-ProGetUser</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../Publish-ProGetAsset/">Publish-ProGetAsset</a>
+                  </li>
+                  <li class="toctree-l1"><a class="" href="../Remove-ProGetApiKey.md">Remove-ProGetApiKey</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Remove-ProGetAssetDirectory</a>
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#synopsis">SYNOPSIS</a>
     </li>
@@ -95,33 +103,7 @@
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#parameters">PARAMETERS</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#-name">-Name</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#-progressaction">-ProgressAction</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#commonparameters">CommonParameters</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#inputs">INPUTS</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#outputs">OUTPUTS</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#notes">NOTES</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#related-links">RELATED LINKS</a>
-    </li>
     </ul>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../New-ProGetUser/">New-ProGetUser</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../Publish-ProGetAsset/">Publish-ProGetAsset</a>
-                  </li>
-                  <li class="toctree-l1"><a class="" href="../Remove-ProGetApiKey.md">Remove-ProGetApiKey</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../Remove-ProGetAssetDirectory/">Remove-ProGetAssetDirectory</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../Remove-ProGetAssetDirectoryItem/">Remove-ProGetAssetDirectoryItem</a>
                   </li>
@@ -163,7 +145,7 @@
   <ul class="wy-breadcrumbs">
     <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
           <li class="breadcrumb-item">Command Reference</li>
-      <li class="breadcrumb-item active">New-ProGetGroup</li>
+      <li class="breadcrumb-item active">Remove-ProGetAssetDirectory</li>
     <li class="wy-breadcrumbs-aside">
     </li>
   </ul>
@@ -172,27 +154,86 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="new-progetgroup">New-ProGetGroup</h1>
+                <h1 id="remove-progetassetdirectory">Remove-ProGetAssetDirectory</h1>
 <h2 id="synopsis">SYNOPSIS</h2>
-<p>Create a new user group in ProGet</p>
+<p>Removes a folder on an asset directory feed.</p>
 <h2 id="syntax">SYNTAX</h2>
-<pre><code>New-ProGetGroup [-Name] &lt;String&gt; [-ProgressAction &lt;ActionPreference&gt;] [&lt;CommonParameters&gt;]
+<pre><code>Remove-ProGetAssetDirectory [-AssetDirectory] &lt;String&gt; [-Folder] &lt;String&gt; [-Recurse]
+ [-ProgressAction &lt;ActionPreference&gt;] [-WhatIf] [-Confirm] [&lt;CommonParameters&gt;]
 </code></pre>
 <h2 id="description">DESCRIPTION</h2>
-<p>{{ Fill in the Description }}</p>
+<p>Removes a folder within an asset directory feed, on the currently available ProGet server.</p>
 <h2 id="examples">EXAMPLES</h2>
 <h3 id="example-1">EXAMPLE 1</h3>
-<pre><code>New-ProGetGroup -Name SomeGroup
+<pre><code>Remove-ProGetAssetDirectory -AssetDirectory Internal -Folder oldfiles
 </code></pre>
+<h1 id="removes-the-specified-directory">Removes the specified directory.</h1>
+<h3 id="example-2">EXAMPLE 2</h3>
+<pre><code>Remove-ProGetAssetDirectory -AssetDirectory Internal -Folder some/files -Recurse -Confirm:$false
+</code></pre>
+<h1 id="recursively-remove-everything-in-the-specified-directory">Recursively remove everything in the specified directory.</h1>
+<h3 id="example-3">EXAMPLE 3</h3>
+<pre><code>Get-ProGetAssetDirectoryItem | Where-Object {$_.Name -eq v1.03 -and $_.Type -eq 'dir'} | Remove-ProGetAssetDirectory -Recurse -Confirm:$false
+</code></pre>
+<h1 id="removes-piped-in-folders-recursively">Removes piped in folders recursively.</h1>
 <h2 id="parameters">PARAMETERS</h2>
-<h3 id="-name">-Name</h3>
-<p>The group to create</p>
+<h3 id="-assetdirectory">-AssetDirectory</h3>
+<p>{{ Fill AssetDirectory Description }}</p>
 <pre><code class="language-yaml">Type: String
 Parameter Sets: (All)
 Aliases:
 
 Required: True
 Position: 1
+Default value: None
+Accept pipeline input: True (ByPropertyName)
+Accept wildcard characters: False
+</code></pre>
+<h3 id="-folder">-Folder</h3>
+<p>{{ Fill Folder Description }}</p>
+<pre><code class="language-yaml">Type: String
+Parameter Sets: (All)
+Aliases: Parent
+
+Required: True
+Position: 2
+Default value: None
+Accept pipeline input: True (ByPropertyName, ByValue)
+Accept wildcard characters: False
+</code></pre>
+<h3 id="-recurse">-Recurse</h3>
+<p>{{ Fill Recurse Description }}</p>
+<pre><code class="language-yaml">Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+</code></pre>
+<h3 id="-whatif">-WhatIf</h3>
+<p>Shows what would happen if the cmdlet runs.
+The cmdlet is not run.</p>
+<pre><code class="language-yaml">Type: SwitchParameter
+Parameter Sets: (All)
+Aliases: wi
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+</code></pre>
+<h3 id="-confirm">-Confirm</h3>
+<p>Prompts you for confirmation before running the cmdlet.</p>
+<pre><code class="language-yaml">Type: SwitchParameter
+Parameter Sets: (All)
+Aliases: cf
+
+Required: False
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -215,12 +256,13 @@ Accept wildcard characters: False
 <h2 id="outputs">OUTPUTS</h2>
 <h2 id="notes">NOTES</h2>
 <h2 id="related-links">RELATED LINKS</h2>
+<p><a href="https://docs.inedo.com/docs/proget/api/assets/folders/delete">https://docs.inedo.com/docs/proget/api/assets/folders/delete</a></p>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../New-ProGetFeedDropPath/" class="btn btn-neutral float-left" title="New-ProGetFeedDropPath"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../New-ProGetUser/" class="btn btn-neutral float-right" title="New-ProGetUser">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../Publish-ProGetAsset/" class="btn btn-neutral float-left" title="Publish-ProGetAsset"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../Remove-ProGetAssetDirectoryItem/" class="btn btn-neutral float-right" title="Remove-ProGetAssetDirectoryItem">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -243,10 +285,10 @@ Accept wildcard characters: False
   <span class="rst-current-version" data-toggle="rst-current-version">
     
     
-      <span><a href="../New-ProGetFeedDropPath/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../Publish-ProGetAsset/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../New-ProGetUser/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../Remove-ProGetAssetDirectoryItem/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

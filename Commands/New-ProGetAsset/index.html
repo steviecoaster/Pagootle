@@ -48,7 +48,13 @@
                 </li>
               </ul>
               <p class="caption"><span class="caption-text">Command Reference</span></p>
-              <ul>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="" href="../Get-ProGetApiKey.md">Get-ProGetApiKey</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../Get-ProGetAssetDirectoryItem/">Get-ProGetAssetDirectoryItem</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../Get-ProGetAssetItemMetadata/">Get-ProGetAssetItemMetadata</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../Get-ProGetConfiguration/">Get-ProGetConfiguration</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../Get-ProGetConnector/">Get-ProGetConnector</a>
@@ -59,29 +65,95 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../Get-ProGetUser/">Get-ProGetUser</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../Import-ProGetAssetDirectoryFromArchive/">Import-ProGetAssetDirectoryFromArchive</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../Merge-Directory/">Merge-Directory</a>
                   </li>
-                  <li class="toctree-l1"><a class="" href="../New-ProgetAsset.md">New-ProgetAsset</a>
+                  <li class="toctree-l1"><a class="" href="../New-ProGetApiKey.md">New-ProGetApiKey</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">New-ProGetAsset</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#synopsis">SYNOPSIS</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#syntax">SYNTAX</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#description">DESCRIPTION</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#examples">EXAMPLES</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#example-1">EXAMPLE 1</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#parameters">PARAMETERS</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#-path">-Path</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#-assetdirectory">-AssetDirectory</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#-folder">-Folder</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#-assetname">-AssetName</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#-chunksize">-ChunkSize</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#-force">-Force</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#-forcemultipartupload">-ForceMultipartUpload</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#-progressaction">-ProgressAction</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#commonparameters">CommonParameters</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#inputs">INPUTS</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#outputs">OUTPUTS</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#notes">NOTES</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#related-links">RELATED LINKS</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../New-ProGetAssetDirectory/">New-ProGetAssetDirectory</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../New-ProGetConnector/">New-ProGetConnector</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../New-ProGetFeed/">New-ProGetFeed</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../New-ProGetUser/">New-ProGetUser</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../New-ProGetFeedDropPath/">New-ProGetFeedDropPath</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../New-ProGetGroup/">New-ProGetGroup</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../New-ProGetUser/">New-ProGetUser</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../Publish-ProGetAsset/">Publish-ProGetAsset</a>
+                  </li>
+                  <li class="toctree-l1"><a class="" href="../Remove-ProGetApiKey.md">Remove-ProGetApiKey</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../Remove-ProGetAssetDirectory/">Remove-ProGetAssetDirectory</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../Remove-ProGetAssetDirectoryItem/">Remove-ProGetAssetDirectoryItem</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../Remove-ProGetConnector/">Remove-ProGetConnector</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../Remove-ProGetFeed/">Remove-ProGetFeed</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../Save-ProGetAsset/">Save-ProGetAsset</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../Save-ProGetAssetDirectoryArchive/">Save-ProGetAssetDirectoryArchive</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../Set-ProGetAssetItemMetadata/">Set-ProGetAssetItemMetadata</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../Set-ProGetConfiguration/">Set-ProGetConfiguration</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../Set-ProGetSslConfig/">Set-ProGetSslConfig</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../Set-ProGetUserPassword/">Set-ProGetUserPassword</a>
+                  </li>
+                  <li class="toctree-l1"><a class="" href="../Switch-ProGetConfiguration.md">Switch-ProGetConfiguration</a>
                   </li>
               </ul>
               <ul>
@@ -102,6 +174,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Command Reference</li>
       <li class="breadcrumb-item active">New-ProGetAsset</li>
     <li class="wy-breadcrumbs-aside">
     </li>
@@ -115,8 +188,9 @@
 <h2 id="synopsis">SYNOPSIS</h2>
 <p>Transfers a file to a ProGet asset directory.</p>
 <h2 id="syntax">SYNTAX</h2>
-<pre><code>New-ProGetAsset [-fileName] &lt;String&gt; [[-AssetDirectory] &lt;String&gt;] [[-Slug] &lt;String&gt;] [-assetName] &lt;String&gt;
- [[-chunkSize] &lt;Int32&gt;] [-ProgressAction &lt;ActionPreference&gt;] [&lt;CommonParameters&gt;]
+<pre><code>New-ProGetAsset [-Path] &lt;String&gt; [-AssetDirectory] &lt;String&gt; [[-Folder] &lt;String&gt;] [[-AssetName] &lt;String&gt;]
+ [[-ChunkSize] &lt;UInt64&gt;] [-Force] [-ForceMultipartUpload] [-ProgressAction &lt;ActionPreference&gt;]
+ [&lt;CommonParameters&gt;]
 </code></pre>
 <h2 id="description">DESCRIPTION</h2>
 <p>Transfers a file to a ProGet asset directory.
@@ -124,10 +198,10 @@ This function performs automatic chunking
 if the file is larger than a specified threshold.</p>
 <h2 id="examples">EXAMPLES</h2>
 <h3 id="example-1">EXAMPLE 1</h3>
-<pre><code>New-ProGetAsset -FileName C:\Files\Image.jpg -AssetName images/image.jpg -EndpointUrl http://proget/endpoints/MyAssetDir
+<pre><code>New-ProGetAsset -AssetDirectory -Path C:\Files\Image.jpg
 </code></pre>
 <h2 id="parameters">PARAMETERS</h2>
-<h3 id="-filename">-fileName</h3>
+<h3 id="-path">-Path</h3>
 <p>Name of the file to upload from the local file system.</p>
 <pre><code class="language-yaml">Type: String
 Parameter Sets: (All)
@@ -136,55 +210,82 @@ Aliases:
 Required: True
 Position: 1
 Default value: None
-Accept pipeline input: False
+Accept pipeline input: True (ByValue)
 Accept wildcard characters: False
 </code></pre>
 <h3 id="-assetdirectory">-AssetDirectory</h3>
-<p>{{ Fill AssetDirectory Description }}</p>
-<pre><code class="language-yaml">Type: String
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: 2
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-</code></pre>
-<h3 id="-slug">-Slug</h3>
-<p>{{ Fill Slug Description }}</p>
-<pre><code class="language-yaml">Type: String
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: 3
-Default value: '/endpoints/{0}' -f $AssetDirectory
-Accept pipeline input: False
-Accept wildcard characters: False
-</code></pre>
-<h3 id="-assetname">-assetName</h3>
-<p>Full path of the asset to create in ProGet's asset directory.</p>
+<p>Name of the asset feed to upload the file to.</p>
 <pre><code class="language-yaml">Type: String
 Parameter Sets: (All)
 Aliases:
 
 Required: True
-Position: 4
+Position: 2
 Default value: None
+Accept pipeline input: True (ByPropertyName)
+Accept wildcard characters: False
+</code></pre>
+<h3 id="-folder">-Folder</h3>
+<p>Folder within the asset feed to store the file in.</p>
+<pre><code class="language-yaml">Type: String
+Parameter Sets: (All)
+Aliases: Parent
+
+Required: False
+Position: 3
+Default value: None
+Accept pipeline input: True (ByPropertyName)
+Accept wildcard characters: False
+</code></pre>
+<h3 id="-assetname">-AssetName</h3>
+<p>Name of the asset to create in ProGet's asset directory.</p>
+<pre><code class="language-yaml">Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 4
+Default value: $(Split-Path $Path -Leaf)
 Accept pipeline input: False
 Accept wildcard characters: False
 </code></pre>
-<h3 id="-chunksize">-chunkSize</h3>
-<p>Uploads larger than this value will be uploaded using multiple requests.
-The default is 5 MB.</p>
-<pre><code class="language-yaml">Type: Int32
+<h3 id="-chunksize">-ChunkSize</h3>
+<p>Uploads larger than 2GB will be uploaded using multiple requests of this size.
+The default is 5 MB.
+Uploading may be faster with larger chunk sizes!</p>
+<pre><code class="language-yaml">Type: UInt64
 Parameter Sets: (All)
 Aliases:
 
 Required: False
 Position: 5
 Default value: 5242880
+Accept pipeline input: False
+Accept wildcard characters: False
+</code></pre>
+<h3 id="-force">-Force</h3>
+<p>By default, the function will not upload if a file already exists with the expected name.
+Force overwrites existing files.</p>
+<pre><code class="language-yaml">Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+</code></pre>
+<h3 id="-forcemultipartupload">-ForceMultipartUpload</h3>
+<p>Forces use of the multipart upload logic.
+If you're having a hard time uploading a large file, try this!</p>
+<pre><code class="language-yaml">Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 </code></pre>
@@ -206,9 +307,15 @@ Accept wildcard characters: False
 <h2 id="outputs">OUTPUTS</h2>
 <h2 id="notes">NOTES</h2>
 <h2 id="related-links">RELATED LINKS</h2>
+<p><a href="https://docs.inedo.com/docs/proget/api/assets/files/upload">https://docs.inedo.com/docs/proget/api/assets/files/upload</a></p>
+<p><a href="https://docs.inedo.com/docs/proget/api/assets/files/upload/multipart">https://docs.inedo.com/docs/proget/api/assets/files/upload/multipart</a></p>
               
             </div>
           </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../Merge-Directory/" class="btn btn-neutral float-left" title="Merge-Directory"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../New-ProGetAssetDirectory/" class="btn btn-neutral float-right" title="New-ProGetAssetDirectory">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
 
   <hr/>
 
@@ -230,6 +337,10 @@ Accept wildcard characters: False
   <span class="rst-current-version" data-toggle="rst-current-version">
     
     
+      <span><a href="../Merge-Directory/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../New-ProGetAssetDirectory/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
