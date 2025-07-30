@@ -26,13 +26,8 @@ function Set-ProGetAssetItemMetadata {
 
     # Modifies the cache header assigned to the asset.
 
-    .LINK
-    https://docs.inedo.com/docs/proget/api/assets/metadata/set
-
-    .LINK
-    https://github.com/Inedo/pgutil/blob/thousand/Inedo.ProGet/AssetDirectories/AssetItemMetadataUpdate.cs
     #>
-    [CmdletBinding(HelpUri = 'https://steviecoaster.github.io/Pagootle/Commands/Commands/Set-ProGetAssetItemMetadata')]
+    [CmdletBinding(HelpUri = 'https://steviecoaster.github.io/Pagootle/Commands/Set-ProGetAssetItemMetadata')]
     param(
         # The asset directory within which the asset to modify is contained.
         [Parameter(Mandatory, ValueFromPipelineByPropertyName, Position = 0)]

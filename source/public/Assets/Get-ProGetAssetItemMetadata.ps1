@@ -11,10 +11,8 @@ function Get-ProGetAssetItemMetadata {
 
     # Returns the asset metadata for the specified asset.
 
-    .LINK
-    https://docs.inedo.com/docs/proget/api/assets/metadata/get
     #>
-    [CmdletBinding(HelpUri = 'https://steviecoaster.github.io/Pagootle/Commands/Commands/Get-ProGetAssetItemMetadata')]
+    [CmdletBinding(HelpUri = 'https://steviecoaster.github.io/Pagootle/Commands/Get-ProGetAssetItemMetadata')]
     [OutputType("ProGetAssetDirectoryItem")]
     param(
         [Parameter(Mandatory, ValueFromPipelineByPropertyName, Position = 0)]

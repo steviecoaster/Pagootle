@@ -15,10 +15,8 @@ function Save-ProGetAsset {
     .EXAMPLE
     Save-ProGetAsset -AssetDirectory Internal -Parent some/folder -Name file.txt -OutputPath c:\temp\downloads
 
-    .LINK
-    https://docs.inedo.com/docs/proget/api/assets/files/download
     #>
-    [CmdletBinding(DefaultParameterSetName = "SplitFile", HelpUri = 'https://steviecoaster.github.io/Pagootle/Commands/Commands/Save-ProGetAsset')]
+    [CmdletBinding(DefaultParameterSetName = "SplitFile", HelpUri = 'https://steviecoaster.github.io/Pagootle/Commands/Save-ProGetAsset')]
     [OutputType([System.IO.FileInfo])]
     param(
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
