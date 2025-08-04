@@ -1,9 +1,5 @@
 # Installation
 
-### BEFORE YOU BEGIN
-
-Ensure that you have installed AutomatedLab (We'll assume you have since you wish to use this thing, but if not, see https://automatedlab.org/en/latest/Wiki/Basic/install/)
-
 ### Build from source
 
 Building from source will require ModuleBuilder from the PowerShell Gallery:

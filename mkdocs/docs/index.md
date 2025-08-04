@@ -12,6 +12,7 @@ Currently this module provides the following capabilities:
 - `New-ProGetAsset`
 - `New-ProGetConnector`
 - `New-ProGetFeed`
+- `New-ProGetFeedDropPath`
 - `New-ProGetGroup`
 - `New-ProGetUser`
 - `Publish-ProGetAsset`

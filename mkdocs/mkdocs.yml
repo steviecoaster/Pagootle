@@ -10,11 +10,12 @@ nav:
     - Get-ProGetTask: ./Commands/Get-ProGetTask.md
     - Get-ProGetUser: ./Commands/Get-ProGetUser.md
     - Merge-Directory: ./Commands/Merge-Directory.md
-    - New-ProgetAsset: ./Commands/New-ProgetAsset.md
+    - New-ProGetAsset: ./Commands/New-ProGetAsset.md
     - New-ProGetConnector: ./Commands/New-ProGetConnector.md
     - New-ProGetFeed: ./Commands/New-ProGetFeed.md
     - New-ProGetUser: ./Commands/New-ProGetUser.md
     - New-ProGetGroup: ./Commands/New-ProGetGroup.md
+    - New-ProGetFeedDropPath: ./Commands/New-ProGetFeedDropPath.md
     - Publish-ProGetAsset: ./Commands/Publish-ProGetAsset.md
     - Remove-ProGetConnector: ./Commands/Remove-ProGetConnector.md
     - Remove-ProGetFeed: ./Commands/Remove-ProGetFeed.md
