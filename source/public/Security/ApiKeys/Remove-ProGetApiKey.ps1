@@ -21,8 +21,6 @@ function Remove-ProGetApiKey {
 
     # Removes system API keys.
 
-    .LINK
-    https://docs.inedo.com/docs/proget/api/apikeys/delete
     #>
     [CmdletBinding(SupportsShouldProcess, ConfirmImpact = "High", HelpUri = 'https://steviecoaster.github.io/Pagootle/Commands/Remove-ProGetApiKey')]
     param(
