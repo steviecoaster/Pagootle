@@ -134,7 +134,7 @@ function Set-ProGetSslConfig {
                 }
                 
                 $certificateThumbprint = (Get-ChildItem Cert:\$($Location)\$($Store) | Where-Object {$_.Subject -like "CN=$Subject"}).Thumbprint
-                $ServiceUser = (Get-CimInstance Win32_Service -Filter "Name = 'INEDOPROGETWEBSVC'").StartName
+                $ServiceUser = (Get-CimInstance Win32_Service -Filter "Name = 'INEDOPROGETSVC'").StartName
 
                 Set-CertPermissions -Thumbprint $certificateThumbprint -Location $Location -Store $Store -ServiceUser $ServiceUser
             }
