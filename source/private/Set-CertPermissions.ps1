@@ -72,7 +72,6 @@ function Set-CertPermissions {
         }
 
         # Grant Inedo Service user read access to the private key
-        $ServiceUser = (Get-CimInstance Win32_Service -Filter "Name = 'INEDOPROGETWEBSVC'").StartName
         Set-ServiceUserPermission -FilePath $keyPath -ServiceUser $ServiceUser -Permissions Read
     }
 }
