@@ -47,27 +47,35 @@ function Set-ProGetSslConfig {
   #>
     [CmdletBinding(HelpUri = 'https://steviecoaster.github.io/Pagootle/Commands/Set-ProGetSslConfig')]
     Param(
-        [Parameter(ParameterSetName = 'WindowsStore')]
+        [Parameter(ParameterSetName = 'WindowsStoreLocation')]
+        [Parameter(ParameterSetName = 'WindowsStoreThumbprint')]
         [Parameter(ParameterSetName = 'CertFile')]
         [Parameter(ParameterSetName = 'Pfx')]
         [String]
         $ConfigFile = 'C:\ProgramData\Inedo\SharedConfig\ProGet.config',
   
-        [Parameter(Mandatory, ParameterSetName = 'WindowsStore')]
+        [Parameter(Mandatory, ParameterSetName = 'WindowsStoreLocation')]
+        [Parameter(Mandatory, ParameterSetName = 'WindowsStoreThumbprint')]
         [ValidateSet('User', 'LocalMachine')]
         [String]
         $Location,
-  
-        [Parameter(Mandatory, ParameterSetName = 'WindowsStore')]
+
+        [Parameter(Mandatory, ParameterSetName = 'WindowsStoreThumbprint')]
+        [Parameter(Mandatory, ParameterSetName = 'WindowsStoreLocation')]
         [ValidateSet('TrustedPeople', 'My', 'WebHosting')]
         [String]
         $Store,
   
-        [Parameter(Mandatory, ParameterSetName = 'WindowsStore')]
+        [Parameter(Mandatory, ParameterSetName = 'WindowsStoreLocation')]
         [String]
         $Subject,
+
+        [Parameter(Mandatory, ParameterSetName = 'WindowsStoreThumbprint')]
+        [String]
+        $Thumbprint,
   
-        [Parameter(ParameterSetName = 'WindowsStore')]
+        [Parameter(ParameterSetName = 'WindowsStoreLocation')]
+        [Parameter(ParameterSetName = 'WindowsStoreThumbprint')]
         [Switch]
         $AllowInvalid,
   
@@ -89,7 +97,8 @@ function Set-ProGetSslConfig {
   
         [Parameter(ParameterSetName = 'CertFile')]
         [Parameter(ParameterSetName = 'Pfx')]
-        [Parameter(ParameterSetName = 'WindowsStore')]
+        [Parameter(ParameterSetName = 'WindowsStoreLocation')]
+        [Parameter(ParameterSetName = 'WindowsStoreThumbprint')]
         [ValidateScript({
             $_ | Foreach-object {
                 if($psitem.EndsWith('/')){
@@ -104,9 +113,7 @@ function Set-ProGetSslConfig {
         $Urls = 'http://*:8624/'
   
     )
-  
     end {
-  
         #Update the configuration file
         [xml]$xml = Get-Content $ConfigFile
         $webServerNode = $xml.InedoAppConfig.WebServer
@@ -115,8 +122,8 @@ function Set-ProGetSslConfig {
         $webServerNode.attributes.RemoveAll()
         $webServerNode.SetAttribute('Enabled',$true)
   
-        switch($PSCmdlet.ParameterSetName){
-            'WindowsStore' {
+        switch -Wildcard ($PSCmdlet.ParameterSetName) {
+            'WindowsStore*' {
                 $PSBoundParameters.GetEnumerator() | ForEach-Object {
     
                     if ($_.Key -eq 'AllowInvalid') {
@@ -132,11 +139,13 @@ function Set-ProGetSslConfig {
                 } else {
                     $webServerNode.SetAttribute('AllowInvalid',$AllowInvalid)
                 }
-                
-                $certificateThumbprint = (Get-ChildItem Cert:\$($Location)\$($Store) | Where-Object {$_.Subject -like "CN=$Subject"}).Thumbprint
+
+                if (-not $Thumbprint) {
+                    $Thumbprint = (Get-ChildItem Cert:\$($Location)\$($Store) | Where-Object {$_.Subject -like "CN=$Subject"}).Thumbprint
+                }
                 $ServiceUser = (Get-CimInstance Win32_Service -Filter "Name = 'INEDOPROGETSVC'").StartName
 
-                Set-CertPermissions -Thumbprint $certificateThumbprint -Location $Location -Store $Store -ServiceUser $ServiceUser
+                Set-CertPermissions -Thumbprint $Thumbprint -Location $Location -Store $Store -ServiceUser $ServiceUser
             }
   
             'CertFile' {
