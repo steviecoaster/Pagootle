@@ -1,10 +1,10 @@
-function New-ProGetFeedDropPath {
+function Set-ProGetFeedDropPath {
     <#
     .SYNOPSIS
     Creates or updates the drop path for a ProGet feed.
 
     .DESCRIPTION
-    The `New-ProGetFeedDropPath` function allows you to set or update the drop path for a specified ProGet feed. 
+    The `Set-ProGetFeedDropPath` function allows you to set or update the drop path for a specified ProGet feed.
     The drop path is used to specify a directory where packages can be dropped for processing by the feed.
 
     .PARAMETER Feed
@@ -14,18 +14,18 @@ function New-ProGetFeedDropPath {
     The directory path to set as the drop path for the feed. If not specified, the drop path will be cleared.
 
     .EXAMPLE
-    New-ProGetFeedDropPath -Feed "MyFeed" -DropPath "C:\Packages\Drop"
+    Set-ProGetFeedDropPath -Feed "MyFeed" -DropPath "C:\Packages\Drop"
 
     Sets the drop path for the feed "MyFeed" to "C:\Packages\Drop".
 
     .EXAMPLE
-    New-ProGetFeedDropPath -Feed "MyFeed"
+    Set-ProGetFeedDropPath -Feed "MyFeed"
 
     Drop Path will default to C:\Drop\MyFeed.
 
     #>
-    [CmdletBinding(HelpUri = 'https://steviecoaster.github.io/Pagootle/Commands/New-ProGetFeedDropPath')]
-    Param(
+    [CmdletBinding(HelpUri = 'https://steviecoaster.github.io/Pagootle/Commands/Set-ProGetFeedDropPath')]
+    param(
         [Parameter(Mandatory)]
         [String]
         $Feed,
@@ -34,7 +34,7 @@ function New-ProGetFeedDropPath {
         [String]
         $DropPath
     )
-    
+
     $dropArgs = @{
         Feed = $Feed
     }
@@ -43,5 +43,5 @@ function New-ProGetFeedDropPath {
         $dropArgs.Add('DropPath', $DropPath)
     }
 
-    Invoke-NewDropPathStoredProc @dropArgs    
+    Invoke-NewDropPathStoredProc @dropArgs
 }
