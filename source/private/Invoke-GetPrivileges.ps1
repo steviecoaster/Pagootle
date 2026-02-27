@@ -1,0 +1,54 @@
+function Invoke-GetPrivileges {
+    [CmdletBinding()]
+    param()
+    $Connection = Get-ProGetDatabase
+    switch ($Connection.Type) {
+        "SQLServer" {
+            Add-Type -AssemblyName "System.Data"
+
+            $connection = [System.Data.SqlClient.SqlConnection]::new($Connection.ConnectionString)
+            $connection.Open()
+
+            try {
+                $command = $connection.CreateCommand()
+                $command.CommandType = [System.Data.CommandType]::StoredProcedure
+                $command.CommandText = 'dbo.Security_GetPrivileges'
+
+                $reader = $command.ExecuteReader()
+                $results = [System.Collections.Generic.List[pscustomobject]]::new()
+
+                while ($reader.Read()) {
+                    $row = @{}
+                    for ($i = 0; $i -lt $reader.FieldCount; $i++) {
+                        $column = $reader.GetName($i)
+                        $row[$column] = $reader.GetValue($i)
+                    }
+                    $results.Add([PSCustomObject]$row)
+                }
+                $reader.Close()
+
+                $results
+            } catch {
+                Write-Error "An error occurred: $_"
+            } finally {
+                $connection.Close()
+            }
+        }
+        "PostgreSQL" {
+            try {
+                $TemporaryFile = New-TemporaryFile
+                Set-Content -Path $TemporaryFile -Value @(
+                    'Select "Privilege_Id","Principal_Name","PrincipalType_Code","PrivilegeType_Code","Role_Id","Role_Name","Feed_Id","Feed_Name","FeedGroup_Id","FeedGroup_Name" FROM "Security_GetPrivileges"();'
+                )
+
+                if (Resolve-Path $env:ProgramFiles\ProGet\Service\proget.exe) {
+                    & (Join-Path $env:ProgramFiles "ProGet\Service\proget.exe") query --file="$($TemporaryFile.FullName)" | ConvertFrom-Csv
+                } else {
+                    Write-Error "Could not find proget.exe"
+                }
+            } finally {
+                Remove-Item $TemporaryFile.FullName
+            }
+        }
+    }
+}
