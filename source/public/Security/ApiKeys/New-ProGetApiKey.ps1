@@ -63,7 +63,7 @@ function New-ProGetApiKey {
         # Name of the feed the feed key applies to.
         [Parameter(ParameterSetName = "Feed", Mandatory)]
         [ValidateScript({
-            if ($_ -notin (Get-ProGetFeed).Name) {
+            if ($_ -ne '*' -and $_ -notin (Get-ProGetFeed).Name) {
                 throw "'$_' was not present on the connected ProGet server."
             }
             $true
@@ -115,7 +115,9 @@ function New-ProGetApiKey {
                 $RequestParams.Body.packagePermissions = $PackagePermissions.ToString().Split(', ')
             }
             "Feed" {
-                $RequestParams.Body.feed = $Feed
+                if ($Feed -ne '*') {
+                    $RequestParams.Body.feed = $Feed
+                }
             }
             "FeedGroup" {
                 $RequestParams.Body.feedGroup = $FeedGroup

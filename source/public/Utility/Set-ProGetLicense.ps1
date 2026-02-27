@@ -27,10 +27,10 @@ function Set-ProGetLicense {
 
         # The ProGet endpoint to apply the license to, e.g. http://localhost:8624.
         # If not provided, uses the current ProGet configuration.
-        [string]$Endpoint
+        [uri]$Endpoint
     )
     if ($Endpoint) {
-        $null = Invoke-RestMethod -Method POST -Uri "$($Endpoint.TrimEnd('/'))/api/settings/set?name=Licensing.Key&value=$License"
+        $null = Invoke-RestMethod -Method POST -Uri "$($Endpoint.ToString().TrimEnd('/'))/api/settings/set?name=Licensing.Key&value=$License"
     } else {
         $params = @{
             Slug   = "/api/settings/set?name=Licensing.Key&value=$License"
