@@ -7,84 +7,52 @@ function Invoke-UserPasswordStoredProc {
     Param(
         [Parameter(Mandatory)]
         [Hashtable]
-        $Params,
-
-        [Parameter()]
-        [switch]
-        $UseRemoting,
-
-        [Parameter()]
-        [string]
-        $RemoteComputer,
-
-        [Parameter()]
-        [pscredential]
-        $Credential
+        $Params
     )
-    $ScriptBlock = {
-        param ($Params, $GetDatabase)
+    $Connection = Get-ProGetDatabase
 
-        $Connection = & $GetDatabase
+    switch ($Connection.Type) {
+        "SQLServer" {
+            Add-Type -AssemblyName "System.Data"
 
-        switch ($Connection.Type) {
-            "SQLServer" {
-                Add-Type -AssemblyName "System.Data"
+            $connection = [System.Data.SqlClient.SqlConnection]::new($Connection.ConnectionString)
+            $connection.Open()
 
-                $connection = [System.Data.SqlClient.SqlConnection]::new($Connection.ConnectionString)
-                $connection.Open()
+            $command = $connection.CreateCommand()
+            $command.CommandType = [System.Data.CommandType]::StoredProcedure
+            $command.CommandText = 'dbo.Users_SetPassword'
 
-                $command = $connection.CreateCommand()
-                $command.CommandType = [System.Data.CommandType]::StoredProcedure
-                $command.CommandText = 'dbo.Users_SetPassword'
+            $command.Parameters.Add((New-Object Data.SqlClient.SqlParameter("@User_Name", [Data.SqlDbType]::NVarChar, 50))).Value = $Params['User_Name']
+            $command.Parameters.Add((New-Object Data.SqlClient.SqlParameter("@Password_Bytes", [Data.SqlDbType]::Binary, 20))).Value = $Params['Password_Bytes']
+            $command.Parameters.Add((New-Object Data.SqlClient.SqlParameter("@Salt_Bytes", [Data.SqlDbType]::Binary, 10))).Value = $Params['Salt_Bytes']
 
-                $command.Parameters.Add((New-Object Data.SqlClient.SqlParameter("@User_Name", [Data.SqlDbType]::NVarChar, 50))).Value = $Params['User_Name']
-                $command.Parameters.Add((New-Object Data.SqlClient.SqlParameter("@Password_Bytes", [Data.SqlDbType]::Binary, 20))).Value = $Params['Password_Bytes']
-                $command.Parameters.Add((New-Object Data.SqlClient.SqlParameter("@Salt_Bytes", [Data.SqlDbType]::Binary, 10))).Value = $Params['Salt_Bytes']
-
-                try {
-                    $null = $command.ExecuteNonQuery()
-                } catch {
-                    Write-Error "An error occurred: $_"
-                } finally {
-                    $connection.Close()
-                }
-            }
-            "PostgreSQL" {
-                try {
-                    $TemporaryFile = New-TemporaryFile
-                    Set-Content -Path $TemporaryFile -Value @(
-                        'Call "Users_SetPassword"('
-                        "    '$($Params['User_Name'])'::varchar,"
-                        "    decode('$(-join($Params.Password_Bytes | ForEach-Object ToString X2))', 'hex'),"
-                        "    decode('$(-join($Params.Salt_Bytes | ForEach-Object ToString X2))', 'hex')"
-                        ');'
-                    )
-
-                    if (Resolve-Path $env:ProgramFiles\ProGet\Service\proget.exe) {
-                        $null = & (Join-Path $env:ProgramFiles "ProGet\Service\proget.exe") query --file="$($TemporaryFile.FullName)"
-                    } else {
-                        Write-Error "Could not find proget.exe"
-                    }
-                } finally {
-                    Remove-Item $TemporaryFile.FullName
-                }
+            try {
+                $null = $command.ExecuteNonQuery()
+            } catch {
+                Write-Error "An error occurred: $_"
+            } finally {
+                $connection.Close()
             }
         }
-    }
+        "PostgreSQL" {
+            try {
+                $TemporaryFile = New-TemporaryFile
+                Set-Content -Path $TemporaryFile -Value @(
+                    'Call "Users_SetPassword"('
+                    "    '$($Params['User_Name'])'::varchar,"
+                    "    decode('$(-join($Params.Password_Bytes | ForEach-Object ToString X2))', 'hex'),"
+                    "    decode('$(-join($Params.Salt_Bytes | ForEach-Object ToString X2))', 'hex')"
+                    ');'
+                )
 
-    if ($UseRemoting) {
-        # Execute on a remote machine using PowerShell remoting
-        $RemoteArgs = @{
-            ComputerName = $RemoteComputer
-            ScriptBlock  = $ScriptBlock
-            ArgumentList = $Params, (Get-Command Get-ProGetDatabase)
+                if (Resolve-Path $env:ProgramFiles\ProGet\Service\proget.exe) {
+                    $null = & (Join-Path $env:ProgramFiles "ProGet\Service\proget.exe") query --file="$($TemporaryFile.FullName)"
+                } else {
+                    Write-Error "Could not find proget.exe"
+                }
+            } finally {
+                Remove-Item $TemporaryFile.FullName
+            }
         }
-        if ($Credential) {
-            $RemoteArgs.Credential = $Credential
-        }
-        Invoke-Command @RemoteArgs
-    } else {
-        # Execute locally
-        & $ScriptBlock $Params (Get-Command Get-ProGetDatabase)
     }
 }
