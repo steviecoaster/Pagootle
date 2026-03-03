@@ -5,11 +5,11 @@ function Set-ProGetUserPassword {
 
     .PARAMETER Credential
     The credential object that contains the username and updated password for the account you wish to update
-    
+
     .EXAMPLE
     Set-ProGetUserPassword -Credential (Get-Credential)
 
-    Pass a PSCredential object with the username and new password and the user account will be updated.    
+    Pass a PSCredential object with the username and new password and the user account will be updated.
 #>
     [Cmdletbinding(HelpUri = 'https://steviecoaster.github.io/Pagootle/Commands/Set-ProGetUserPassword')]
     Param(
@@ -18,9 +18,6 @@ function Set-ProGetUserPassword {
         [PSCredential]
         $Credential
     )
-
-
-
     end {
 
         $iterations = 10000
