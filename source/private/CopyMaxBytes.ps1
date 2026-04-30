@@ -1,37 +1,46 @@
 function CopyMaxBytes {
     [CmdletBinding()]
     param(
-        [Parameter()]
+        [Parameter(Mandatory)]
         [System.IO.FileStream]   
         $source,
     
-        [Parameter()]
+        [Parameter(Mandatory)]
         [System.IO.Stream]
         $target,
-    
-        [Parameter()]
-        [Int]
+
+        [Parameter(Mandatory)]
+        [long]
         $maxBytes,
 
-        [Parameter()]
-        [Int]
-        $startOffset, 
-    
-        [Parameter()]
-        [Int]
+        [Parameter(Mandatory)]
+        [long]
+        $startOffset,
+
+        [Parameter(Mandatory)]
+        [long]
         $totalSize
     )
+
     end {
-        $buffer = [byte[]]::CreateInstance([byte], 32767)
-        $totalBytesRead = 0
-        while ($true) {
-            $bytesRead = $source.Read($buffer, 0, [Math]::Min($maxBytes - $totalBytesRead, $buffer.Length))
-            if (!$bytesRead) { break }
+        $buffer = [byte[]]::new(5MB)
+        [long]$totalBytesRead = 0
+
+        while ($totalBytesRead -lt $maxBytes) {
+            [int]$bytesToRead = [int][Math]::Min($buffer.Length, $maxBytes - $totalBytesRead)
+
+            [int]$bytesRead = $source.Read($buffer, 0, $bytesToRead)
+            if ($bytesRead -le 0) { break }
+
             $target.Write($buffer, 0, $bytesRead)
-            $totalBytesRead += $bytesRead
-            if ($totalBytesRead -ge $maxBytes) { break }
-            $overallProgress = $startOffset + $totalBytesRead
-            Write-Progress -Activity "Uploading $Path..." -Status "$overallProgress/$totalSize" -PercentComplete ($overallProgress / $totalSize * 100)
+            $totalBytesRead += [long]$bytesRead
+
+            if ($totalSize -gt 0) {
+                [long]$overallProgress = $startOffset + $totalBytesRead
+                [int]$percentComplete = [int][Math]::Min(100, [Math]::Floor(($overallProgress * 100.0) / $totalSize))
+
+                Write-Progress -Activity "Uploading..." -Status "$overallProgress/$totalSize" -PercentComplete $percentComplete
+            }
         }
     }
 }

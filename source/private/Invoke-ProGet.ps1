@@ -67,12 +67,14 @@ function Invoke-ProGet {
         if ($File) {
             $fileContent = [System.IO.File]::ReadAllBytes($File)
             $params['Body'] = $fileContent
-            $params['ContentType'] = 'application/octet-stream'
+            if (-not $PSBoundParameters.ContainsKey('ContentType')) {
+                $params['ContentType'] = 'application/octet-stream'
+            }
         }
 
         if ($AdditionalParameters) {
             $AdditionalParameters.GetEnumerator().ForEach{
-                $params.$_ = $AdditionalParameters.$_
+                $params[$_.Key] = $AdditionalParameters[$_.Value]
             }
         }
 

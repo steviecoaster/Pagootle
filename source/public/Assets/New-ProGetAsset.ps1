@@ -16,6 +16,9 @@ function New-ProGetAsset {
         .Parameter Folder
         Folder within the asset feed to store the file in.
 
+        .Parameter ContentType
+        ContentType of the asset.
+
         .Parameter AssetName
         Name of the asset to create in ProGet's asset directory.
 
@@ -75,6 +78,10 @@ function New-ProGetAsset {
 
         [Parameter()]
         [string]
+        $ContentType = 'application/octet-stream',
+
+        [Parameter()]
+        [string]
         $AssetName = $(Split-Path $Path -Leaf),
 
         [Parameter()]
@@ -91,79 +98,76 @@ function New-ProGetAsset {
         $Configuration = Get-ProGetConfiguration
     }
     process {
+        $slugSegments = @(
+            "/endpoints"
+            $AssetDirectory
+            "metadata"
+            if ($Folder) {$Folder.TrimStart('/').TrimEnd('/')}
+            [Uri]::EscapeUriString($AssetName.Replace('\', '/'))
+        )
+
+        if (-not $Force) {
+            try { 
+                if (Invoke-ProGet -Slug ($slugSegments -join '/')) { throw "$_ Run with -Force to overwrite!" }
+            }
+            catch {
+                if ($_.ErrorDetails.Message -ne "Asset not found.") { throw $_ }
+            }
+        }
+
         $fileInfo = Get-Item -Path $Path
 
-        $RequestParams = @{
-            Slug = @(
-                "/endpoints"
-                $AssetDirectory
-                "content"
-                if ($Folder) {$Folder.TrimStart('/').TrimEnd('/')}
-                [Uri]::EscapeUriString($AssetName.Replace('\', '/'))
-            ) -join '/'
+        $parts = $slugSegments.Clone()
+        $parts[2] = "content"
+        $ContentSlug = $parts -join '/'
+        
+        # simple upload
+        if (-not $ForceMultipartUpload -and $fileInfo.Length -lt 2GB) {
+            $method = if ($Force) {"Post"} else {"Put"}
+            $null = Invoke-ProGet -Method $method -ContentType $ContentType -Slug $ContentSlug -File $fileInfo.FullName
+            return
         }
 
-        if (-not $ForceMultipartUpload -and $fileInfo.Length -lt 2GB) {
-            $RequestParams += @{
-                Method = if ($Force) {"Post"} else {"Put"}
-                File = $FileInfo.FullName
-            }
-            try {
-                $null = Invoke-ProGet @RequestParams
-            } catch {
-                if ($_.Exception.Response.StatusCode -eq 400) {
-                    Write-Error -Message "$_ Run with -Force to overwrite!" -Exception $_.Exception -ErrorAction Stop
-                }
-                throw
-            }
-        } else {  # The Multipart Asset File Upload is an HTTP Request specifically for multipart uploads of very large (2GB+) files.
-            # As this endpoint doesn't complain if we overwrite a file, check if we aren't forcing upload.
-            if (-not $Force -and (Invoke-ProGet @RequestParams)) {
-                Write-Error -Message "The specified asset already exists. Run with -Force to overwrite!" -Category InvalidOperation -ErrorAction Stop 
-            }
+        # multipart upload
+        $baseUrl = $Configuration.EndpointUrl.TrimEnd('/') + "/" + $ContentSlug.TrimStart('/')
+        $sourceStream = [System.IO.FileStream]::new($Path, [System.IO.FileMode]::Open, [System.IO.FileAccess]::Read, [System.IO.FileShare]::Read, 4096, [System.IO.FileOptions]::SequentialScan)
+        try {
+            $fileLength = $sourceStream.Length
+            $totalParts = [long](($fileLength + $ChunkSize - 1) / $ChunkSize)
 
-            $sourceStream = [System.IO.FileStream]::new($Path, [System.IO.FileMode]::Open, [System.IO.FileAccess]::Read, [System.IO.FileShare]::Read, 4096, [System.IO.FileOptions]::SequentialScan)
+            $uuid = (New-Guid).ToString("N")
 
-            try {
-                $fileLength = $sourceStream.Length
-                $remainder = [long]0
-                $totalParts = [Math]::DivRem([long]$fileLength, [long]$chunkSize, [ref]$remainder)
-                if($remainder -ne 0) { $totalParts++ }
-                $uuid = (New-Guid).ToString("N")
+            for ($i = 0; $i -lt $totalParts; $i++) {
+                $offset = $i * $ChunkSize
+                $currentChunkSize = if ($i -eq ($totalParts - 1)) { $fileLength - $offset } else { $ChunkSize }
 
-                0..($totalParts-1) | ForEach-Object {
-                    $index = $_
-                    $offset = $index * $chunkSize
-                    $currentChunkSize = if ($index -eq ($totalParts - 1)) { $fileLength - $offset } else { $chunkSize }
+                $url = "$($baseUrl)?multipart=upload&id=$uuid&index=$i&offset=$offset&totalSize=$fileLength&partSize=$currentChunkSize&totalParts=$totalParts"
 
-                    $req = [System.Net.WebRequest]::CreateHttp("$($Configuration.EndpointUrl)$($RequestParams.Slug)?multipart=upload&id=$uuid&index=$index&offset=$offset&totalSize=$fileLength&partSize=$currentChunkSize&totalParts=$totalParts")
-                    $req.Method = 'POST'
-                    Write-Verbose "[$($req.Method)] $($req.RequestUri)"
-                    $req.Headers.Add("X-ApiKey", ([System.Net.NetworkCredential]::new("ApiKey", $Configuration.ApiKey)).Password)
-                    $req.ContentLength = $currentChunkSize
-                    $req.AllowWriteStreamBuffering = $false
-                    $reqStream = $req.GetRequestStream()
-                    try { CopyMaxBytes -source $sourceStream -target $reqStream -maxBytes $currentChunkSize -startOffset $offset -totalSize $fileLength }
-                    finally { if($reqStream) { $reqStream.Dispose() } }
-
-                    try {
-                        $response = $req.GetResponse()
-                    } finally { if($response) { $response.Dispose() } }
-                }
-
-                Write-Progress -Activity "Uploading $Path..." -Status "Completing upload..." -PercentComplete -1
-
-                Write-Verbose "Completing Multipart Upload of '$($Path)'"
-                $req = [System.Net.WebRequest]::CreateHttp("$($Configuration.EndpointUrl)$($RequestParams.Slug)?multipart=complete&id=$uuid")
+                $req = [System.Net.WebRequest]::CreateHttp($url)
                 $req.Method = 'POST'
-                Write-Verbose "[$($req.Method)] $($req.RequestUri)"
                 $req.Headers.Add("X-ApiKey", ([System.Net.NetworkCredential]::new("ApiKey", $Configuration.ApiKey)).Password)
-                $req.ContentLength = 0
+                $req.ContentLength = $currentChunkSize
+                $req.AllowWriteStreamBuffering = $false
+                
+                Write-Verbose "[$($req.Method)] $($req.RequestUri)"
+                $reqStream = $req.GetRequestStream()
+                try {
+                    CopyMaxBytes -source $sourceStream -target $reqStream -maxBytes $currentChunkSize -startOffset $offset -totalSize $fileLength
+                }
+                finally { if ($reqStream) { $reqStream.Dispose() } }
+
+                $response = $null
                 try {
                     $response = $req.GetResponse()
-                } finally { if($response) { $response.Dispose() } }
+                }
+                finally { if ($response) { $response.Dispose() } }
             }
-            finally { if($sourceStream) { $sourceStream.Dispose() } }
+
+            Write-Progress -Activity "Uploading $Path..." -Status "Completing upload..." -PercentComplete -1
+            Write-Verbose "Completing Multipart Upload of '$Path'"
+            $null = Invoke-ProGet -Method 'Post' -ContentType $ContentType -Slug "$($ContentSlug)?multipart=complete&id=$uuid"
+            Write-Progress -Activity "Uploading $Path..." -Status "Completing upload..." -Completed
         }
+        finally { if ($sourceStream) { $sourceStream.Dispose() } }
     }
 }
